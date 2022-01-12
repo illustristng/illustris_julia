@@ -12,6 +12,8 @@ export treePath
 export treeOffsets
 export subLinkOffsets
 export loadTree
+export maxPastMass
+export numMergers
 
 function treePath(basePath, treeName, chunkNum=0)
     
@@ -183,6 +185,72 @@ function loadTree(basePath, snapNum, i, fields=nothing, onlyMPB=false, treeName=
     
     return result
     
+end
+
+function maxPastMass(tree, index, partType="stars")
+    
+    ptNum = util.partTypeNum(partType)
+    
+    branchSize = tree["MainLeafProgenitorID"][index+1] - tree["SubhaloID"][index+1] + 1
+    masses = tree["SubhaloMassType"][ptNum+1, index+1:index+branchSize]
+    return maximum(masses)
+        
+end
+
+function numMergers(tree, minMassRatio=1e-10, massPartType="stars", index=0)
+    
+    reqFields = ["SubhaloID", "NextProgenitorID", "MainLeafProgenitorID", "FirstProgenitorID", "SubhaloMassType"]
+    
+    for field in reqFields
+        
+        if (field in keys(tree)) == false
+            
+            error("Error: Input tree does not contain the field: " * field)
+            
+        end
+        
+    end
+    
+    numMergers = 0
+    invMassRatio = 1.0 / minMassRatio
+    
+    rootID = tree["SubhaloID"][index+1]
+    fpID = tree["FirstProgenitorID"][index+1]
+    
+    while fpID != -1
+        
+        fpIndex = index + (fpID - rootID)
+        fpMass  = maxPastMass(tree, fpIndex, massPartType)
+        
+        npID = tree["NextProgenitorID"][fpIndex+1]
+        
+        while npID != -1
+            
+            npIndex = index + (npID - rootID)
+            npMass  = maxPastMass(tree, npIndex, massPartType)
+            
+            if (fpMass > 0.0) & (npMass > 0.0)
+                
+                ratio = npMass / fpMass
+                
+                if (ratio >= minMassRatio) & (ratio <=invMassRatio)
+                    
+                    numMergers = numMergers + 1
+                    
+                end
+                
+            end
+            
+            npID = tree["NextProgenitorID"][npIndex+1]
+            
+        end
+        
+        fpID = tree["FirstProgenitorID"][fpIndex+1]
+        
+    end
+    
+    return numMergers
+            
 end
 
 end

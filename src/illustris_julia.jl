@@ -1,6 +1,6 @@
 ## main module
 
-module il
+module illustris_julia
 
 include("util.jl")
 include("groupcat.jl")

@@ -152,7 +152,6 @@ function loadSingle(basePath, snapNum; haloID=-1, subhaloID=-1)
 	if subhaloID >= 0
 		gName = "Subhalo"
 		searchID = subhaloID
-		print("subhalo")
 	else
 		gName = "Group"
 		searchID = haloID
@@ -169,15 +168,17 @@ function loadSingle(basePath, snapNum; haloID=-1, subhaloID=-1)
 
 	@. offsets = searchID - offsets
 	fileNum = maximum( findall(x->x>=0, offsets) )
-	groupOffset = offsets[fileNum]
-
-        print(fileNum, groupOffset)
+	groupOffset = offsets[fileNum] + 1
 
 	result = Dict()
 
 	f = h5open(gcPath(basePath, snapNum, fileNum - 1), "r")
 	for haloProp in keys(f[gName])
-		result[haloProp] = f[gName][haloProp][groupOffset]
+		if ndims(f[gName][haloProp]) == 1
+			result[haloProp] = f[gName][haloProp][groupOffset]
+		else
+			result[haloProp] = f[gName][haloProp][:,groupOffset]
+		end
 	end
 	close(f)
 

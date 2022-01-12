@@ -61,7 +61,7 @@ function treeOffsets(basePath, snapNum, i, treeName)
         fileNum = maximum( findall(x->x>=0, groupFileOffsets) )
         groupOffset = groupFileOffsets[fileNum]
         
-        offsetFile = groucat.gcPath(basePath, snapNum, fileNum-1)
+        offsetFile = groupcat.gcPath(basePath, snapNum, fileNum-1)
         prefix = "Offsets/Subhalo_Sublink"
         
     end

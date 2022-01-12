@@ -143,7 +143,7 @@ function load(basePath, snapNum)
 
 end
 
-function loadSingle(basePath, snapNum, haloID=-1, subhaloID=-1)
+function loadSingle(basePath, snapNum; haloID=-1, subhaloID=-1)
 
 	if (haloID < 0 && subhaloID < 0) || (haloID >= 0 && subhaloID >= 0)
 		error("Must specify either haloID or subhaloID (and not both).")
@@ -151,13 +151,10 @@ function loadSingle(basePath, snapNum, haloID=-1, subhaloID=-1)
 
 	if subhaloID >= 0
 		gName = "Subhalo"
+		searchID = subhaloID
+		print("subhalo")
 	else
 		gName = "Group"
-	end
-
-	if subhaloID >= 0
-		searchID = subhaloID
-	else
 		searchID = haloID
 	end
 
@@ -173,6 +170,8 @@ function loadSingle(basePath, snapNum, haloID=-1, subhaloID=-1)
 	@. offsets = searchID - offsets
 	fileNum = maximum( findall(x->x>=0, offsets) )
 	groupOffset = offsets[fileNum]
+
+        print(fileNum, groupOffset)
 
 	result = Dict()
 

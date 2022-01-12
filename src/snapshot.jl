@@ -194,8 +194,9 @@ function getSnapOffsets(basePath, snapNum, i, t)
         r["offsetType"] = f[t * "/SnapByType"][:, i+1]
         close(f)
     else
-        f = h5open(groupcat.gcPath(basePath, snapNum, fileNum), "r")
+        f = h5open(groupcat.gcPath(basePath, snapNum, fileNum-1), "r")
         r["offsetType"] = f["Offsets"][t * "_SnapByType"][:, groupOffset+1]
+        close(f)
     end
 
     return r 

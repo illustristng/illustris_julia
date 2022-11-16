@@ -44,6 +44,11 @@ function loadObjects(basePath, snapNum, gName, nName, fields)
 	f = h5open(gcPath(basePath, snapNum), "r")
 
 	header = h5readattr(gcPath(basePath, snapNum), "Header")
+
+        if (haskey(header,"N" * nName * "_Total") == false) && nName == "subgroups"
+                nName = "subhalos"
+        end
+
 	result["count"] = header["N" * nName * "_Total"]
 
 	if (result["count"] == 0)

@@ -17,13 +17,20 @@ export loadHalo
 function snapPath(basePath, snapNum, chunkNum=0)
 
     snapPath = basePath * "/snapdir_" * lpad(snapNum, 3, "0") * "/"
-    filePath = snapPath * "snap_" * lpad(snapNum, 3, "0") * "." * lpad(chunkNum, 0, "0") * ".hdf5"
+    filePath1 = snapPath * "snap_" * lpad(snapNum, 3, "0") * "." * lpad(chunkNum, 0, "0") * ".hdf5"
+    filePath2 = replace(filePath1, "/snap_" => "/snapshot_")
 
-    return filePath
-
+    if isfile(filePath1)
+        return filePath1
+    end
+    return filePath2
 end
 
 function getNumPart(header)
+
+    if haskey(header,"NumPart_Total_HighWord") == false
+        return header["NumPart_Total"]
+    end
 
     nTypes = 6
 

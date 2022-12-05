@@ -14,18 +14,18 @@ export loadTree
 
 function treePath(basePath, chunkNum=0)
     
-    filePath1 = basePath * "/trees/treedata/" * "trees_sf1_135." * string(chunkNum) * ".hdf5"
-    filePath2 = basePath * "/../postprocessing/trees/LHaloTree/trees_sf1_099." * string(chunkNum) * ".hdf5"
+    filePaths = [ basePath * "/trees/treedata/" * "trees_sf1_135." * string(chunkNum) * ".hdf5", 
+                  basePath * "/../postprocessing/trees/LHaloTree/trees_sf1_099." * string(chunkNum) * ".hdf5", 
+                  basePath * "/../postprocessing/trees/LHaloTree/trees_sf1_080." * string(chunkNum) * ".hdf5" 
+                ]
     
-    if isfile(filePath1)
-        return filePath1
+    for filePath in filePaths
+        if isfile(filePath)
+            return filePath
+        end
     end
-        
-    if isfile(filePath2)
-        return filePath2
-    end
-            
-    return filePath
+
+    throw(ArgumentError("LHaloTree file not found!"))
     
 end
 

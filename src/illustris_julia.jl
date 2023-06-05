@@ -7,5 +7,6 @@ include("groupcat.jl")
 include("snapshot.jl")
 include("sublink.jl")
 include("lhalotree.jl")
+include("cartesian.jl")
 
 end

@@ -1,4 +1,4 @@
-## cartesian.jl
+## cartesian.jl (THESAN only)
 
 module cartesian
 

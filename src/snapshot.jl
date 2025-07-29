@@ -34,9 +34,14 @@ function getNumPart(header)
 
     nTypes = 6
 
-    nPart = zeros(Float64, nTypes)
+    low = UInt64.(header["NumPart_Total"])
+    high = UInt64.(header["NumPart_Total_HighWord"])
 
-    @. nPart = header["NumPart_Total"] | (header["NumPart_Total_HighWord"] << 32)
+    nPart = zeros(Int64, nTypes)
+
+    for i in 1:nTypes
+        nPart[i] = Int64((high[i] << 32) | low[i])
+    end
 
     return nPart
 
@@ -70,7 +75,7 @@ function loadSubset(basePath, snapNum, partType, fields = nothing, subset = noth
 
         fileNum = 0
         fileOff = 0
-        numToRead = nPart[ptNum+1]
+        numToRead = Int64(nPart[ptNum+1])
 
     end
 
@@ -142,11 +147,16 @@ function loadSubset(basePath, snapNum, partType, fields = nothing, subset = noth
         for field in fields
             
             shape = [i for i in size(f[gName][field])]
+
+            start_w = Int64(wOffset)
+            stop_w  = Int64(wOffset + numToReadLocal - 1)
+            start_f = Int64(fileOff + 1)
+            stop_f  = Int64(fileOff + numToReadLocal)
             
             if length(shape) == 1
-                result[field][wOffset:wOffset+numToReadLocal-1] = f[gName][field][fileOff+1:fileOff+numToReadLocal]
+                result[field][start_w:stop_w] = f[gName][field][start_f:stop_f]
             else
-                result[field][:,wOffset:wOffset+numToReadLocal-1] = f[gName][field][:,fileOff+1:fileOff+numToReadLocal]
+                result[field][:, start_w:stop_w] = f[gName][field][:, start_f:stop_f]
             end
             
         end
@@ -155,7 +165,7 @@ function loadSubset(basePath, snapNum, partType, fields = nothing, subset = noth
         numToRead = numToRead - numToReadLocal
         fileNum = fileNum + 1
         fileOff = 0
-        
+
         close(f)
         
     end
